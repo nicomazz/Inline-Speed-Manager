@@ -3,31 +3,42 @@
 
 #define TX 10
 #define RX 11
-
 #define LASER_INPUT A0
+
+#define TEST_ENABLED
 
 SoftwareSerial mySerial(RX, TX);
 
-void setup() {
+#ifdef TEST_ENABLED
+void test(){
+   int millisecond = random(0, 1000*20); // from 0 to 20 sec
+   delay(millisecond);
+   mySerial.print(millis());
+   mySerial.print("-");
+}
+#endif
 
-  Serial.begin(9600); Serial.println("inizio!");
+void setup(){
+   Serial.begin(9600);
+   Serial.println("inizio!");
 
-  pinMode(LASER_INPUT,INPUT);
+   pinMode(LASER_INPUT, INPUT);
 
-
-
-  mySerial.begin(9600);
-  Serial.println("ARDUINO SPEEDOMETER started");
-  mySerial.println("ARDUINO SPEEDOMETER started");
+   mySerial.begin(9600);
+   Serial.println("ARDUINO SPEEDOMETER started");
+   mySerial.println("ARDUINO SPEEDOMETER started");
 }
 
+inline bool laserInterruped(){
+   return digitalRead(LASER_INPUT);
+}
 // da 370 a 1024 void loop() { //digitalWrite(13,digitalRead(4));
-void loop(){
-  if (mySerial.available())
-
-    Serial.write(mySerial.read());
-
-  if (Serial.available()){ //char s = Serial.read(); //Serial.write(s);
-  mySerial.write(Serial.read()); }
-
+void loop() {
+#ifdef TEST_ENABLED
+   test();
+#else
+   while (!laserInterruped());
+   mySerial.print(millis()); mySerial.print("-");
+   while (laserInterruped());
+#endif
 }
