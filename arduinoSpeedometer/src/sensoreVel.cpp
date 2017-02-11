@@ -32,7 +32,7 @@ void setup(){
 inline bool laserInterruped(){
    return digitalRead(LASER_INPUT);
 }
-// da 370 a 1024 void loop() { //digitalWrite(13,digitalRead(4));
+
 void loop() {
 #ifdef TEST_ENABLED
    test();

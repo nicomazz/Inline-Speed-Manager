@@ -14,9 +14,16 @@ public class Run extends RealmObject {
     public long durationMillis;
     public int conesFallen;
 
-    public Run(){}
+    public Run() {
+    }
+
     public Run(long time) {
         durationMillis = time;
         millisCreation = System.currentTimeMillis();
+    }
+
+    @Override
+    public String toString() {
+        return durationMillis / 1000 + " secondi e " + (durationMillis % 1000) / 10 + " decimi";
     }
 }

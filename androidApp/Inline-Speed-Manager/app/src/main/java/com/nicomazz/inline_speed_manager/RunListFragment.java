@@ -1,6 +1,9 @@
 package com.nicomazz.inline_speed_manager;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,6 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
 
@@ -39,11 +43,26 @@ public class RunListFragment extends Fragment implements BTReceiverManager.BTSta
     @BindView(R.id.log_text)
     TextView logText;
 
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
+
+    @BindView(R.id.sortFab)
+    FloatingActionButton sortFab;
+
     private RunListRecycleViewAdapter adapter;
     private Realm realm;
     private RunDetector runDetector;
 
     private Snackbar snackBTInfo;
+
+    private SortType sortType = SortType.creationTime;
+
+    enum SortType {
+        creationTime,
+        bestTime
+    }
+
+    ;
 
 
     @Override
@@ -57,26 +76,63 @@ public class RunListFragment extends Fragment implements BTReceiverManager.BTSta
 
         runDetector = new RunDetector(this, this, getActivity());
 
+        initFabs();
         setHasOptionsMenu(true);
+        TTSHelper.init();
         return rootView;
     }
 
+    private void initFabs() {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                runDetector.onPause();
+                runDetector.onResume();
+            }
+        });
+        sortFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (sortType.equals(SortType.creationTime)) {
+                    sortType = SortType.bestTime;
+                    sortFab.setImageResource(R.drawable.ic_timer_white_24dp);
+                    onBtStatusUpdated("Sorted by best time");
+                } else {
+                    sortType = SortType.creationTime;
+                    sortFab.setImageResource(R.drawable.ic_sort_white_24dp);
+                    onBtStatusUpdated("Sorted by creation time");
+                }
+                initRecycleView();
+            }
+        });
+    }
+
     private void initRecycleView() {
-        list.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        //  llm.setReverseLayout(true);
+        //llm.setStackFromEnd(true);
+        list.setLayoutManager(llm);
         adapter = new RunListRecycleViewAdapter(getContext(), getRealmData());
         list.setAdapter(adapter);
     }
 
     private RealmResults<Run> getRealmData() {
-        return realm.where(Run.class).findAllAsync();
+        switch (sortType) {
+            case creationTime:
+                return realm.where(Run.class).findAllSortedAsync("millisCreation", Sort.DESCENDING);
+            default:
+                return realm.where(Run.class).findAllSortedAsync("durationMillis");
+        }
     }
 
 
-    private Run addRunToRealm(final Run run) {
-        realm.beginTransaction();
-        Run persistentPacking = realm.copyToRealm(run);
-        realm.commitTransaction();
-        return persistentPacking;
+    private void addRunToRealm(final Run run) {
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.copyToRealm(run);
+            }
+        });
     }
 
     @Override
@@ -92,24 +148,30 @@ public class RunListFragment extends Fragment implements BTReceiverManager.BTSta
     }
 
     @Override
-    public void onBtStatusUpdated(String s) {
-        if (snackBTInfo == null) {
-            snackBTInfo = Snackbar.make(list, s, LENGTH_LONG);
-        }
-        snackBTInfo.setText(s);
-        if (!snackBTInfo.isShown())
-            snackBTInfo.show();
+    public void onBtStatusUpdated(final String s) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                if (snackBTInfo == null) {
+                    snackBTInfo = Snackbar.make(list, s, LENGTH_LONG);
+                }
+                snackBTInfo.setText(s);
+                if (!snackBTInfo.isShown())
+                    snackBTInfo.show();
+            }
+        });
     }
 
     @Override
     public void onRunDetected(Run run) {
         addRunToRealm(run);
         updateLog();
+        TTSHelper.speakText(run.toString());
     }
 
     public void updateLog() {
-        if (logView.getVisibility() == View.VISIBLE)
-            logText.setText(runDetector.getLog());
+        //if (isLogVisible())
+        logText.setText(runDetector.getLog());
     }
 
     @Override
@@ -122,11 +184,29 @@ public class RunListFragment extends Fragment implements BTReceiverManager.BTSta
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.debug)
             changeAllTimesVisibility();
+        else if (item.getItemId() == R.id.delete_all)
+            deleteAllItems();
         return super.onOptionsItemSelected(item);
     }
 
+    private void deleteAllItems() {
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.delete(Run.class);
+            }
+        });
+    }
+
+    private boolean isLogVisible() {
+        return logView.getVisibility() == View.VISIBLE;
+    }
+
     private void changeAllTimesVisibility() {
-        logView.setVisibility(logText.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
+        //logView.setVisibility(logText.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
+        if (isLogVisible())
+            logView.setVisibility(View.GONE);
+        else logView.setVisibility(View.VISIBLE);
         updateLog();
     }
 }

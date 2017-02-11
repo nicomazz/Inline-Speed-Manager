@@ -5,6 +5,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -54,8 +55,9 @@ public class RunItemView extends LinearLayout {
     }
 
     private void init() {
-        setOrientation(LinearLayout.HORIZONTAL);
+        setOrientation(LinearLayout.VERTICAL);
         setLayoutParams(generateDefaultLayoutParams());
+       // setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -68,8 +70,8 @@ public class RunItemView extends LinearLayout {
     @SuppressLint("DefaultLocale")
     public void populate(Run run) {
         this.run = run;
-        time.setText(String.format("%.3f ms", ((double) run.durationMillis) / 1000));
-        creationDateTime.setText(getDateTimeFromMillis(run.durationMillis));
+        time.setText(String.format("%.3f s", ((double) run.durationMillis) / 1000));
+        creationDateTime.setText(getDateTimeFromMillis(run.millisCreation));
     }
 
     public static String getDateTimeFromMillis(long millis) {
