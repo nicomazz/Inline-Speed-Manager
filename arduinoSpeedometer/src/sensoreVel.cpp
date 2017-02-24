@@ -3,9 +3,11 @@
 
 #define TX 10
 #define RX 11
-#define LASER_INPUT A0
+#define LASER_VCC 2
+#define LASER_INPUT 3
+#define LASER_GND 4
 
-#define TEST_ENABLED
+//#define TEST_ENABLED
 
 SoftwareSerial mySerial(RX, TX);
 
@@ -24,21 +26,35 @@ void setup(){
 
    pinMode(LASER_INPUT, INPUT);
 
+   pinMode(LASER_VCC,OUTPUT);
+   digitalWrite(LASER_VCC,HIGH);
+   pinMode(LASER_GND,OUTPUT);
+   digitalWrite(LASER_GND,LOW);
+
    mySerial.begin(9600);
    Serial.println("ARDUINO SPEEDOMETER started");
    mySerial.println("ARDUINO SPEEDOMETER started");
+
+
+
 }
 
 inline bool laserInterruped(){
-   return digitalRead(LASER_INPUT);
+   return !digitalRead(LASER_INPUT);
 }
 // da 370 a 1024 void loop() { //digitalWrite(13,digitalRead(4));
 void loop() {
 #ifdef TEST_ENABLED
    test();
 #else
+   digitalWrite(13,LOW);
+   while (laserInterruped());
+   mySerial.print(millis()); mySerial.print("-");
+   Serial.println(millis());
+   digitalWrite(13,HIGH);
    while (!laserInterruped());
    mySerial.print(millis()); mySerial.print("-");
-   while (laserInterruped());
+   Serial.println(millis());
+
 #endif
 }
