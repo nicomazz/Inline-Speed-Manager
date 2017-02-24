@@ -9,12 +9,15 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,6 +26,7 @@ import java.util.UUID;
  */
 
 public class BTReceiverManager {
+    private static final String TAG = "BTReceiverManager";
     private BluetoothDevice BTReceiver;
 
     private OnTimeReceived timeReceivedListener;
@@ -39,7 +43,6 @@ public class BTReceiverManager {
     }
 
 
-
     public BTReceiverManager(OnTimeReceived timeReceivedListener, BTStatusInterface btStatusListener, Activity activity) {
         this.activity = activity;
         this.timeReceivedListener = timeReceivedListener;
@@ -48,14 +51,14 @@ public class BTReceiverManager {
     }
 
     private void init(Activity activity) {
-        if (!isBtEnabled(activity))
+        if (isConnected() || !isBtEnabled(activity))
             return;
         BTReceiver = getReceiverDevice();
         if (BTReceiver == null) return;
         new ConnectBT().execute();
     }
 
-    public  boolean isBtEnabled(Activity activity) {
+    public boolean isBtEnabled(Activity activity) {
         BluetoothAdapter myBluetooth = BluetoothAdapter.getDefaultAdapter();
         if (myBluetooth == null) {
             log("Bluetooth Not Available");
@@ -142,6 +145,7 @@ public class BTReceiverManager {
 
         try {
             btSocket.close(); //close connection
+            isBtConnected = false;
         } catch (IOException e) {
             e.printStackTrace();
             log("Error in disconnecting");
@@ -167,7 +171,7 @@ public class BTReceiverManager {
                 Long millis = Long.parseLong(s);
                 millisToSend.add(millis);
             } catch (Exception e) {
-                log("ReceivedStrangeThings: "+s);
+                log("ReceivedStrangeThings: " + s);
             }
         }
         return millisToSend;
@@ -187,18 +191,20 @@ public class BTReceiverManager {
         }
 
         public void run() {
-            byte[] buffer = new byte[256];
-            int bytes;
+            Scanner in = new Scanner(mmInStream);
+            in.useDelimiter("-");
 
             // Keep looping to listen for received messages
             while (true) {
+
                 try {
-                    bytes = mmInStream.read(buffer);            //read bytes from input buffer
-                    String readMessage = new String(buffer, 0, bytes);
-                    handleMessageReceived(readMessage);
-                } catch (IOException e) {
+                    String s = in.next();
+                    handleMessageReceived(s);
+                    Log.d(TAG, "Message received: " + s);
+                } catch (NoSuchElementException e) {
                     break;
                 }
+
             }
         }
     }
@@ -231,7 +237,7 @@ public class BTReceiverManager {
         init(activity);
     }
 
-    private void log(String s){
+    private void log(String s) {
         btStatusListener.onBtStatusUpdated(s);
     }
 }

@@ -1,29 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/content_main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.nicomazz.inline_speed_manager.RunListFragment"
-    tools:showIn="@layout/activity_main">
+    android:layout_height="match_parent">
 
-
-    <ScrollView
-        android:id="@+id/log_view"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_alignParentBottom="true">
-
-        <TextView
-            android:id="@+id/log_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </ScrollView>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/list"
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/content_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/log_view"/>
-</RelativeLayout>
+        tools:context="com.nicomazz.inline_speed_manager.RunListFragment"
+        tools:showIn="@layout/activity_main">
+
+
+        <ScrollView
+            android:id="@+id/log_view"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorPrimary"
+            android:elevation="4dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/log_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"/>
+        </ScrollView>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/log_view"
+            />
+
+
+    </RelativeLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_bluetooth_connected_white_24dp"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/sortFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fab"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="80dp"
+        android:src="@drawable/ic_sort_white_24dp"/>
+</android.support.design.widget.CoordinatorLayout>

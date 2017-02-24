@@ -33,28 +33,28 @@ public class RunDetector implements BTReceiverManager.OnTimeReceived {
 
         lastTime = time;
         if (isPossibleTime(runTime))
-            addRun(new Run(time));
+            addRun(new Run(runTime));
 
     }
 
-    private void addRun(Run run){
+    private void addRun(Run run) {
         if (listener != null)
             listener.onRunDetected(run);
     }
 
     private void logTime(long runTime) {
-        synchronized (runTimes) {
-            runTimes.add(runTime);
-        }
+        runTimes.add(runTime);
+
     }
 
     public String getLog() {
-        synchronized (runTimes) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = runTimes.size(); i >= 0; i--)
-                sb.append(runTimes.get(i).toString()).append("\n");
-            return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        for (int i = runTimes.size() - 1; i >= runTimes.size() - 20 && i >= 0; i--) {
+            Float time = (float) runTimes.get(i) / 1000;
+            sb.append(time.toString()).append("\n");
         }
+        return sb.toString();
+
     }
 
     public ArrayList<Long> getLogArray() {

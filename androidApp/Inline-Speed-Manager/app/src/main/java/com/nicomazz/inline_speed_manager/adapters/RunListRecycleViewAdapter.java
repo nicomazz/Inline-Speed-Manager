@@ -19,6 +19,8 @@ import io.realm.RealmRecyclerViewAdapter;
 public class RunListRecycleViewAdapter extends RealmRecyclerViewAdapter<Run, RunListRecycleViewAdapter.ViewHolder> {
     public RunListRecycleViewAdapter(Context context, OrderedRealmCollection<Run> data) {
         super(context, data, true);
+        setHasStableIds(true);
+
     }
 
     @Override
@@ -26,6 +28,11 @@ public class RunListRecycleViewAdapter extends RealmRecyclerViewAdapter<Run, Run
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.simple_card_view, parent, false);
         return new ViewHolder(view);
+    }
+
+    @Override
+    public long getItemId(int index) {
+        return getData().get(index).millisCreation;
     }
 
     @Override

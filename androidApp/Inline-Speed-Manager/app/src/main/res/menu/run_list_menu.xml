@@ -7,4 +7,10 @@
         android:title="debug"
         android:icon="@drawable/ic_timer_white_24dp"
         app:showAsAction="always"/>
+    <item
+        android:id="@+id/delete_all"
+        android:orderInCategory="101"
+        android:title="delete all"
+        app:showAsAction="never"/>
+
 </menu>
