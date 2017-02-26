@@ -21,11 +21,7 @@ public class TTSHelper {
             @Override
             public void onInit(int status) {
                 ttsService.setLanguage(Locale.ITALY);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    for (Voice tmpVoice : ttsService.getVoices()) {
-                        Log.d("ttsHelper","voice: "+tmpVoice.getName());
-                    }
-                }
+
 
                 initialized = true;
             }

@@ -3,6 +3,7 @@ package com.nicomazz.inline_speed_manager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,7 @@ import java.util.TimerTask;
  */
 public class ManualStartFragment extends BaseRunListFragment {
 
-
+    private static final String TAG = "ManualStartFrag";
     private RunDetector runDetector;
 
     private boolean runStartIntercept = false;
@@ -27,6 +28,8 @@ public class ManualStartFragment extends BaseRunListFragment {
     private Timer validRunTimer;
 
     private long startTime;
+
+    private long delayInTransmission = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,6 +45,11 @@ public class ManualStartFragment extends BaseRunListFragment {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (startButton.getProgress() > 0 && startButton.getProgress() != 100) {
+                    Log.e(TAG, "run in progreass, set bad!");
+                    setBadProgess();
+                    return;
+                }
                 startTime = System.currentTimeMillis();
                 try {
                     startRun();
@@ -63,8 +71,9 @@ public class ManualStartFragment extends BaseRunListFragment {
 
     @Override
     public void onRunDetected(Run run) {
-        if (runStartIntercept){
-            Toast.makeText(getContext(), "Delay: "+((System.currentTimeMillis()-startTime)/2)+" ms", Toast.LENGTH_SHORT).show();
+        if (runStartIntercept) {
+            delayInTransmission = ((System.currentTimeMillis() - startTime) / 2);
+            Toast.makeText(getContext(), "Delay: " + delayInTransmission + " ms", Toast.LENGTH_SHORT).show();
         }
         updateLog();
         if (!runInProgress) return;
@@ -72,6 +81,7 @@ public class ManualStartFragment extends BaseRunListFragment {
             startButtonLoading();
             return;
         }
+        run.durationMillis -= delayInTransmission;
         onRunTimeReceived();
         super.onRunDetected(run);
     }
@@ -83,6 +93,7 @@ public class ManualStartFragment extends BaseRunListFragment {
     }
 
     private void onRunTimeReceived() {
+        Log.e(TAG, "run time received!");
         runInProgress = false;
         if (validRunTimer != null) validRunTimer.cancel();
         startButton.setProgress(100);
@@ -91,7 +102,7 @@ public class ManualStartFragment extends BaseRunListFragment {
             public void run() {
                 startButton.setProgress(0);
             }
-        },2000);
+        }, 2000);
     }
 
     private void initValidTimer() {
@@ -107,10 +118,12 @@ public class ManualStartFragment extends BaseRunListFragment {
     }
 
     private void setBadProgess() {
+        if (validRunTimer != null) validRunTimer.cancel();
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
                 runInProgress = false;
+                runStartIntercept = false;
                 startButton.setProgress(-1);
             }
         });
@@ -136,7 +149,8 @@ public class ManualStartFragment extends BaseRunListFragment {
 
     @Override
     public void onNewTimeReceived() {
-        updateLog();
+        if (logView.getVisibility() == View.VISIBLE)
+            updateLog();
     }
 
     public void updateLog() {

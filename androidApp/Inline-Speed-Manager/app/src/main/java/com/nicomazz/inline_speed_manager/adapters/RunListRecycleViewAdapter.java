@@ -17,8 +17,12 @@ import io.realm.RealmRecyclerViewAdapter;
 
 
 public class RunListRecycleViewAdapter extends RealmRecyclerViewAdapter<Run, RunListRecycleViewAdapter.ViewHolder> {
-    public RunListRecycleViewAdapter(Context context, OrderedRealmCollection<Run> data) {
+
+    public OnTimeDelete onTimeDelete;
+
+    public RunListRecycleViewAdapter(Context context, OrderedRealmCollection<Run> data, OnTimeDelete onTimeDelete) {
         super(context, data, true);
+        this.onTimeDelete = onTimeDelete;
         setHasStableIds(true);
 
     }
@@ -40,7 +44,7 @@ public class RunListRecycleViewAdapter extends RealmRecyclerViewAdapter<Run, Run
         holder.populate(getData().get(position));
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ViewHolder extends RecyclerView.ViewHolder  {
         RunItemView packageItemView;
         Run mItem;
         View rootView;
@@ -50,17 +54,24 @@ public class RunListRecycleViewAdapter extends RealmRecyclerViewAdapter<Run, Run
             rootView = view;
             packageItemView = new RunItemView(context);
             ((CardView) view).addView(packageItemView);
-            view.setOnClickListener(this);
+            view.setOnLongClickListener(new View.OnLongClickListener() {
+
+                @Override
+                public boolean onLongClick(View v) {
+                    onTimeDelete.onTimeDelete(mItem);
+                    return false;
+                }
+            });
+
         }
 
         void populate(Run Run) {
             mItem = Run;
             packageItemView.populate(Run);
         }
+    }
 
-        @Override
-        public void onClick(View v) {
-            //RunList.openEventDetails(mItem.getListName(), context);
-        }
+    public interface OnTimeDelete{
+        void onTimeDelete(Run run);
     }
 }

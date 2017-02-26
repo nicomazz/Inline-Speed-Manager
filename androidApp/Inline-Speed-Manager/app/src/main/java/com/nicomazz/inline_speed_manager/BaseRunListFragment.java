@@ -32,7 +32,7 @@ import static android.support.design.widget.Snackbar.LENGTH_LONG;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class BaseRunListFragment extends Fragment implements BTReceiverManager.BTStatusInterface, RunDetector.OnRunDetected {
+public class BaseRunListFragment extends Fragment implements BTReceiverManager.BTStatusInterface, RunDetector.OnRunDetected, RunListRecycleViewAdapter.OnTimeDelete {
 
 
     @BindView(R.id.log_text)
@@ -62,6 +62,8 @@ public class BaseRunListFragment extends Fragment implements BTReceiverManager.B
     private Snackbar snackBTInfo;
 
     private SortType sortType = SortType.creationTime;
+
+
 
     enum SortType {
         creationTime,
@@ -106,7 +108,7 @@ public class BaseRunListFragment extends Fragment implements BTReceiverManager.B
     private void initRecycleView() {
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         list.setLayoutManager(llm);
-        adapter = new RunListRecycleViewAdapter(getContext(), getRealmData());
+        adapter = new RunListRecycleViewAdapter(getContext(), getRealmData(),this);
         list.setAdapter(adapter);
     }
 
@@ -128,7 +130,22 @@ public class BaseRunListFragment extends Fragment implements BTReceiverManager.B
             }
         });
     }
+    @Override
+    public void onTimeDelete(final Run run) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        RealmResults<Run> result = realm.where(Run.class).equalTo("millisCreation",run.millisCreation).findAll();
+                        result.deleteFirstFromRealm();
+                    }
+                });
+            }
+        });
 
+    }
 
     @Override
     public void onBtStatusUpdated(final String s) {

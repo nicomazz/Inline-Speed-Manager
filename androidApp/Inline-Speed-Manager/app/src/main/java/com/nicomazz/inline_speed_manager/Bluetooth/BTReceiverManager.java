@@ -152,28 +152,32 @@ public class BTReceiverManager {
         }
     }
 
+    private long timeToHandleMessage = 0;
     private void handleMessageReceived(String received) {
-        final String[] ss = received.split("-");
+        final String[] ss = received.split("/");
         final ArrayList<Long> millisToSend = parseMillis(ss);
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                for (Long millis : millisToSend)
+                for (Long millis : millisToSend) {
+                    Log.e(TAG,"time to handle message: "+(System.currentTimeMillis()-timeToHandleMessage));
                     timeReceivedListener.onTimeReceived(millis);
+                }
+
             }
         });
     }
 
     private ArrayList<Long> parseMillis(String[] millisStr) {
         ArrayList<Long> millisToSend = new ArrayList<>();
-        for (String s : millisStr) {
+        for (String s : millisStr)
             try {
                 Long millis = Long.parseLong(s);
                 millisToSend.add(millis);
             } catch (Exception e) {
                 log("ReceivedStrangeThings: " + s);
             }
-        }
+
         return millisToSend;
     }
 
@@ -192,15 +196,16 @@ public class BTReceiverManager {
 
         public void run() {
             Scanner in = new Scanner(mmInStream);
-            in.useDelimiter("|");
+            in.useDelimiter("/");
 
             // Keep looping to listen for received messages
             while (true) {
 
                 try {
                     String s = in.next();
+                    timeToHandleMessage = System.currentTimeMillis();
                     handleMessageReceived(s);
-                    Log.d(TAG, "Message received: " + s);
+                   // Log.d(TAG, "Message received: " + s);
                 } catch (NoSuchElementException e) {
                     break;
                 }

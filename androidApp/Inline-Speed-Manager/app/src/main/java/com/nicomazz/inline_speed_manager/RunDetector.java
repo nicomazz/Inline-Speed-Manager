@@ -32,8 +32,8 @@ public class RunDetector implements BTReceiverManager.OnTimeReceived {
         logTime(runTime);
         listener.onNewTimeReceived();
         lastTime = time;
-        if (isPossibleTime(runTime))
-            addRun(new Run(runTime));
+        //if (isPossibleTime(runTime))
+        addRun(new Run(runTime));
 
     }
 
