@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.nicomazz.inline_speed_manager.Bluetooth.BTReceiverManager;
 import com.nicomazz.inline_speed_manager.models.Run;
@@ -25,6 +26,8 @@ public class ManualStartFragment extends BaseRunListFragment {
     private boolean runInProgress = false;
     private Timer validRunTimer;
 
+    private long startTime;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -39,6 +42,7 @@ public class ManualStartFragment extends BaseRunListFragment {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startTime = System.currentTimeMillis();
                 try {
                     startRun();
                     initValidTimer();
@@ -59,6 +63,9 @@ public class ManualStartFragment extends BaseRunListFragment {
 
     @Override
     public void onRunDetected(Run run) {
+        if (runStartIntercept){
+            Toast.makeText(getContext(), "Delay: "+((System.currentTimeMillis()-startTime)/2)+" ms", Toast.LENGTH_SHORT).show();
+        }
         updateLog();
         if (!runInProgress) return;
         if (runStartIntercept) {
