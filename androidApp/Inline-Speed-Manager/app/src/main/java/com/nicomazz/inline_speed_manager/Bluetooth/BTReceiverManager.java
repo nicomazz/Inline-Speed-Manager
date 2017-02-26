@@ -192,7 +192,7 @@ public class BTReceiverManager {
 
         public void run() {
             Scanner in = new Scanner(mmInStream);
-            in.useDelimiter("-");
+            in.useDelimiter("|");
 
             // Keep looping to listen for received messages
             while (true) {
@@ -211,8 +211,10 @@ public class BTReceiverManager {
 
     //write method
     public void write(String input) {
-        if (!isConnected()) return;
-
+        if (!isConnected()) {
+            Toast.makeText(context, "Not connected", Toast.LENGTH_LONG).show();
+            throw new NotConnectedException();
+        }
         try {
             btSocket.getOutputStream().write(input.getBytes());
         } catch (IOException e) {
@@ -239,5 +241,8 @@ public class BTReceiverManager {
 
     private void log(String s) {
         btStatusListener.onBtStatusUpdated(s);
+    }
+
+    public class NotConnectedException extends RuntimeException {
     }
 }

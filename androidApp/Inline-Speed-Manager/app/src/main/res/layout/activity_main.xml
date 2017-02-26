@@ -23,15 +23,58 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <fragment
-        android:id="@+id/fragment"
-        android:name="com.nicomazz.inline_speed_manager.RunListFragment"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                android:text="Free start"
+                app:bootstrapBrand="success"
+                app:bootstrapSize="lg"
+                app:buttonMode="regular"
+                app:showOutline="false"
+                app:roundedCorners="true"
+                android:id="@+id/free_start"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_width="300dp"
+                android:layout_height="128dp"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                android:text="Manual start"
+                app:bootstrapBrand="success"
+                app:bootstrapSize="lg"
+                app:buttonMode="regular"
+                app:showOutline="false"
+                app:roundedCorners="true"
+                android:id="@+id/manual_start"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_height="128dp"
+                android:layout_width="300dp"/>
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/fragmentContainer"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:layout="@layout/run_list_fragment_layout"/>
+        >
 
-
+    </FrameLayout>
 
 
 </android.support.design.widget.CoordinatorLayout>

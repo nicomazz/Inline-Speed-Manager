@@ -30,7 +30,7 @@ public class RunDetector implements BTReceiverManager.OnTimeReceived {
     public void onTimeReceived(long time) {
         long runTime = time - lastTime;
         logTime(runTime);
-
+        listener.onNewTimeReceived();
         lastTime = time;
         if (isPossibleTime(runTime))
             addRun(new Run(runTime));
@@ -76,8 +76,13 @@ public class RunDetector implements BTReceiverManager.OnTimeReceived {
         return 1000 * 15;
     }
 
+    public void startRun() {
+        btManager.write("!");
+    }
+
     public interface OnRunDetected {
         void onRunDetected(Run run);
+        void onNewTimeReceived();
     }
 
     public void onPause() {

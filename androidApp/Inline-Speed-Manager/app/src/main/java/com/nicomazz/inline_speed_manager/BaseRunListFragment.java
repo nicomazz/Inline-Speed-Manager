@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.dd.CircularProgressButton;
 import com.nicomazz.inline_speed_manager.Bluetooth.BTReceiverManager;
 import com.nicomazz.inline_speed_manager.adapters.RunListRecycleViewAdapter;
 import com.nicomazz.inline_speed_manager.models.Run;
@@ -31,7 +32,11 @@ import static android.support.design.widget.Snackbar.LENGTH_LONG;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class RunListFragment extends Fragment implements BTReceiverManager.BTStatusInterface, RunDetector.OnRunDetected {
+public class BaseRunListFragment extends Fragment implements BTReceiverManager.BTStatusInterface, RunDetector.OnRunDetected {
+
+
+    @BindView(R.id.log_text)
+    TextView logText;
 
 
     @BindView(R.id.list)
@@ -40,18 +45,19 @@ public class RunListFragment extends Fragment implements BTReceiverManager.BTSta
     @BindView(R.id.log_view)
     View logView;
 
-    @BindView(R.id.log_text)
-    TextView logText;
-
     @BindView(R.id.fab)
     FloatingActionButton fab;
 
     @BindView(R.id.sortFab)
     FloatingActionButton sortFab;
 
+    @BindView(R.id.start_button)
+    CircularProgressButton startButton;
+
+
+
     private RunListRecycleViewAdapter adapter;
     private Realm realm;
-    private RunDetector runDetector;
 
     private Snackbar snackBTInfo;
 
@@ -61,8 +67,6 @@ public class RunListFragment extends Fragment implements BTReceiverManager.BTSta
         creationTime,
         bestTime
     }
-
-    ;
 
 
     @Override
@@ -74,7 +78,6 @@ public class RunListFragment extends Fragment implements BTReceiverManager.BTSta
         realm = Realm.getDefaultInstance();
         initRecycleView();
 
-        runDetector = new RunDetector(this, this, getActivity());
 
         initFabs();
         setHasOptionsMenu(true);
@@ -82,14 +85,7 @@ public class RunListFragment extends Fragment implements BTReceiverManager.BTSta
         return rootView;
     }
 
-    private void initFabs() {
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                runDetector.onPause();
-                runDetector.onResume();
-            }
-        });
+    protected void initFabs() {
         sortFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -109,8 +105,6 @@ public class RunListFragment extends Fragment implements BTReceiverManager.BTSta
 
     private void initRecycleView() {
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
-        //  llm.setReverseLayout(true);
-        //llm.setStackFromEnd(true);
         list.setLayoutManager(llm);
         adapter = new RunListRecycleViewAdapter(getContext(), getRealmData());
         list.setAdapter(adapter);
@@ -135,17 +129,6 @@ public class RunListFragment extends Fragment implements BTReceiverManager.BTSta
         });
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        runDetector.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        runDetector.onResume();
-    }
 
     @Override
     public void onBtStatusUpdated(final String s) {
@@ -165,13 +148,16 @@ public class RunListFragment extends Fragment implements BTReceiverManager.BTSta
     @Override
     public void onRunDetected(Run run) {
         addRunToRealm(run);
-        updateLog();
         TTSHelper.speakText(run.toString());
+        updateLog();
+    }
+
+    @Override
+    public void onNewTimeReceived() {
+        updateLog();
     }
 
     public void updateLog() {
-        //if (isLogVisible())
-        logText.setText(runDetector.getLog());
     }
 
     @Override
@@ -203,7 +189,6 @@ public class RunListFragment extends Fragment implements BTReceiverManager.BTSta
     }
 
     private void changeAllTimesVisibility() {
-        //logView.setVisibility(logText.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
         if (isLogVisible())
             logView.setVisibility(View.GONE);
         else logView.setVisibility(View.VISIBLE);

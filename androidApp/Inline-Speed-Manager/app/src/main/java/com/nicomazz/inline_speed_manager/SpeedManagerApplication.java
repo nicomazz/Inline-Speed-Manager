@@ -19,6 +19,8 @@ package com.nicomazz.inline_speed_manager;
 import android.app.Application;
 import android.content.Context;
 
+import com.beardedhen.androidbootstrap.TypefaceProvider;
+
 import io.realm.Realm;
 
 public class SpeedManagerApplication extends Application {
@@ -30,6 +32,8 @@ public class SpeedManagerApplication extends Application {
         super.onCreate();
         // Initialize Realm. Should only be done once when the application starts.
         Realm.init(this);
+        TypefaceProvider.registerDefaultIconSets();
+
         context = getApplicationContext();
     }
 
