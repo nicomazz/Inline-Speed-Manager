@@ -6,17 +6,20 @@
 #define LASER_VCC 2
 #define LASER_INPUT 3
 #define LASER_GND 4
-
+#define LED_PIN 13
 //#define TEST_ENABLED
 
 SoftwareSerial mySerial(RX, TX);
 
+void printMillis(){
+   mySerial.print(millis());
+   mySerial.print("|");
+}
 #ifdef TEST_ENABLED
 void test(){
    int millisecond = random(0, 1000*20); // from 0 to 20 sec
    delay(millisecond);
-   mySerial.print(millis());
-   mySerial.print("-");
+   printMillis();
 }
 #endif
 
@@ -42,19 +45,23 @@ void setup(){
 inline bool laserInterruped(){
    return !digitalRead(LASER_INPUT);
 }
-
+void checkForStartMessages(){
+   if (mySerial.available()){
+      int inByte = mySerial.read();
+      printMillis();
+   }
+}
+bool laserInterrupedState = laserInterruped();
 void loop() {
+
 #ifdef TEST_ENABLED
    test();
 #else
-   digitalWrite(13,LOW);
-   while (laserInterruped());
-   mySerial.print(millis()); mySerial.print("-");
-   Serial.println(millis());
-   digitalWrite(13,HIGH);
-   while (!laserInterruped());
-   mySerial.print(millis()); mySerial.print("-");
-   Serial.println(millis());
+
+   digitalWrite(LED_PIN,laserInterrupedState);
+   while (laserInterruped() == laserInterrupedState) checkForStartMessages();
+   laserInterrupedState = !laserInterrupedState;
+   printMillis();
 
 #endif
 }
