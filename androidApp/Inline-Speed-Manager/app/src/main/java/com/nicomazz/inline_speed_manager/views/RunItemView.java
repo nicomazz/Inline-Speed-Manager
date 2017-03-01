@@ -31,6 +31,8 @@ public class RunItemView extends LinearLayout {
     @BindView(R.id.time)
     TextView time;
 
+    @BindView(R.id.precision)
+    TextView precision;
 
     private Context context;
     private Run run;
@@ -72,6 +74,7 @@ public class RunItemView extends LinearLayout {
         this.run = run;
         time.setText(String.format("%.3f s", ((double) run.durationMillis) / 1000));
         creationDateTime.setText(getDateTimeFromMillis(run.millisCreation));
+        precision.setText("(+- "+precision+" ms)");
     }
 
     public static String getDateTimeFromMillis(long millis) {

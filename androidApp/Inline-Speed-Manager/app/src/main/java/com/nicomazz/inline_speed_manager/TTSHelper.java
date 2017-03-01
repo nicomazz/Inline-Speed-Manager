@@ -21,8 +21,6 @@ public class TTSHelper {
             @Override
             public void onInit(int status) {
                 ttsService.setLanguage(Locale.ITALY);
-
-
                 initialized = true;
             }
         });
@@ -32,13 +30,6 @@ public class TTSHelper {
            // init();
             return;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int sz  = ttsService.getVoices().size();
-            int pos = new Random().nextInt(sz);
-            //ttsService.setVoice((Voice) ttsService.getVoices().toArray()[pos]);
-        }
         ttsService.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-
-        //ttsService.speak(text)//
     }
 }

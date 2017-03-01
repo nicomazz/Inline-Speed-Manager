@@ -22,6 +22,7 @@ import android.content.Context;
 import com.beardedhen.androidbootstrap.TypefaceProvider;
 
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 public class SpeedManagerApplication extends Application {
 
@@ -32,6 +33,11 @@ public class SpeedManagerApplication extends Application {
         super.onCreate();
         // Initialize Realm. Should only be done once when the application starts.
         Realm.init(this);
+        RealmConfiguration config = new RealmConfiguration
+                .Builder()
+                .deleteRealmIfMigrationNeeded()
+                .build();
+        Realm.setDefaultConfiguration(config);
         TypefaceProvider.registerDefaultIconSets();
 
         context = getApplicationContext();

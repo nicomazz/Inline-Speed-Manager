@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -46,7 +47,7 @@ public class ManualStartFragment extends BaseRunListFragment {
             @Override
             public void onClick(View v) {
                 if (startButton.getProgress() > 0 && startButton.getProgress() != 100) {
-                    Log.e(TAG, "run in progreass, set bad!");
+                    Log.e(TAG, "run in progress, set bad!");
                     setBadProgess();
                     return;
                 }
@@ -59,6 +60,13 @@ public class ManualStartFragment extends BaseRunListFragment {
                 }
             }
         });
+        //todo start requests on button touch
+       /* startButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return false;
+            }
+        });*/
     }
 
 
@@ -74,6 +82,7 @@ public class ManualStartFragment extends BaseRunListFragment {
         if (runStartIntercept) {
             delayInTransmission = ((System.currentTimeMillis() - startTime) / 2);
             Toast.makeText(getContext(), "Delay: " + delayInTransmission + " ms", Toast.LENGTH_SHORT).show();
+            run.trasmissionDelay = (int) delayInTransmission;
         }
         updateLog();
         if (!runInProgress) return;
@@ -81,7 +90,7 @@ public class ManualStartFragment extends BaseRunListFragment {
             startButtonLoading();
             return;
         }
-        run.durationMillis -= delayInTransmission;
+        run.durationMillis += delayInTransmission;
         onRunTimeReceived();
         super.onRunDetected(run);
     }

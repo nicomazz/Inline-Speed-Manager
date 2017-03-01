@@ -14,11 +14,30 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Display3"
         android:textColor="@android:color/black"/>
 
-    <TextView
-        android:text="TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/creationTime"
-        android:textAlignment="gravity"
-        android:layout_gravity="right"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:text="TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/creationTime"
+            android:textAlignment="gravity"
+            android:layout_gravity="right"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"/>
+
+        <TextView
+            android:text="TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/precision"
+            android:textSize="10sp"/>
+    </RelativeLayout>
+
 </LinearLayout>

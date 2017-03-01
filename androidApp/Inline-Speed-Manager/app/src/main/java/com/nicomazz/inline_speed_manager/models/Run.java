@@ -13,6 +13,7 @@ public class Run extends RealmObject {
 
     public long durationMillis;
     public int conesFallen;
+    public int trasmissionDelay = 0;
 
     public Run() {
     }
