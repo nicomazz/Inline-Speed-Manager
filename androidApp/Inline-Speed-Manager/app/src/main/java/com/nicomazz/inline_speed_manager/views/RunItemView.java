@@ -74,7 +74,7 @@ public class RunItemView extends LinearLayout {
         this.run = run;
         time.setText(String.format("%.3f s", ((double) run.durationMillis) / 1000));
         creationDateTime.setText(getDateTimeFromMillis(run.millisCreation));
-        precision.setText("(+- "+precision+" ms)");
+        precision.setText("(+- "+run.trasmissionDelay+" ms)");
     }
 
     public static String getDateTimeFromMillis(long millis) {
