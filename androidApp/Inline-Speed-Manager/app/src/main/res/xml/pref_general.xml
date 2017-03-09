@@ -13,7 +13,8 @@
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="Tempo minimo" />
+        android:title="Tempo minimo"
+        android:summary="Una volta partito il cronometro non si fermerà prima dei secondi impostati."/>
     <EditTextPreference
         android:defaultValue="8"
         android:inputType="number"
@@ -21,6 +22,34 @@
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="Tempo massimo" />
+        android:title="Tempo massimo"
+        android:summary="Le run con tempo superiore a quello impostato verranno considerate nulle." />
+    <EditTextPreference
+        android:defaultValue="Ai posti"
+        android:inputType="text"
+        android:key="ai_posti"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Ai posti"
+        android:summary="Ciò che la voce deve dire al posto di ai posti" />
+    <EditTextPreference
+        android:defaultValue="pronti?"
+        android:inputType="text"
+        android:key="partenza"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Pronti"
+        android:summary="Ciò che la voce deve dire al posto di pronti" />
+    <EditTextPreference
+        android:defaultValue="via"
+        android:inputType="text"
+        android:key="via"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Via"
+        android:summary="Ciò che la voce deve dire al posto di Via" />
 
 </PreferenceScreen>

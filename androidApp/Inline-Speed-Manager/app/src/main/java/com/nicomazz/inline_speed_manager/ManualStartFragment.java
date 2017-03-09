@@ -41,7 +41,10 @@ public class ManualStartFragment extends BaseRunListFragment {
         return rootView;
     }
 
-    private void initStartButton() {
+    protected void setStartTime(long time){
+        startTime = time;
+    }
+    protected void initStartButton() {
         startButton.setVisibility(View.VISIBLE);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,23 +57,16 @@ public class ManualStartFragment extends BaseRunListFragment {
                 startTime = System.currentTimeMillis();
                 try {
                     startRun();
-                    initValidTimer();
                 } catch (BTReceiverManager.NotConnectedException e) {
                     setBadProgess();
                 }
             }
         });
-        //todo start requests on button touch
-       /* startButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return false;
-            }
-        });*/
     }
 
 
-    private void startRun() {
+    protected void startRun() {
+        initValidTimer();
         runStartIntercept = true;
         runInProgress = true;
         runDetector.startRun();
@@ -126,7 +122,7 @@ public class ManualStartFragment extends BaseRunListFragment {
         }, 15000);
     }
 
-    private void setBadProgess() {
+    protected void setBadProgess() {
         if (validRunTimer != null) validRunTimer.cancel();
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override

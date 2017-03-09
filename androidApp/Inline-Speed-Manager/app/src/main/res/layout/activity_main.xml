@@ -24,49 +24,6 @@
     </android.support.design.widget.AppBarLayout>
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-
-            <com.beardedhen.androidbootstrap.BootstrapButton
-                android:text="Free start"
-                app:bootstrapBrand="success"
-                app:bootstrapSize="lg"
-                app:buttonMode="regular"
-                app:showOutline="false"
-                app:roundedCorners="true"
-                android:id="@+id/free_start"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:layout_width="300dp"
-                android:layout_height="128dp"/>
-        </FrameLayout>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-
-            <com.beardedhen.androidbootstrap.BootstrapButton
-                android:text="Manual start"
-                app:bootstrapBrand="success"
-                app:bootstrapSize="lg"
-                app:buttonMode="regular"
-                app:showOutline="false"
-                app:roundedCorners="true"
-                android:id="@+id/manual_start"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:layout_height="128dp"
-                android:layout_width="300dp"/>
-        </FrameLayout>
-
-    </LinearLayout>
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -75,6 +32,21 @@
         >
 
     </FrameLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
+    <com.nightonke.boommenu.BoomMenuButton
+        android:id="@+id/bmb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="16dp"
+        app:bmb_normalColor="@color/colorAccent"
+        app:bmb_buttonEnum="ham"
+        />
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

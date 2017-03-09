@@ -30,7 +30,7 @@
             android:name=".ManualStartActivity"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".Preferences"
             android:label="@string/title_activity_settings"></activity>
     </application>
 
