@@ -1,9 +1,10 @@
-<menu
-    xmlns:tools="http://schemas.android.com/tools"
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     tools:context="com.nicomazz.inline_speed_manager.MainActivity">
-    <!-- <item
+    <item
          android:id="@+id/action_settings"
          android:orderInCategory="100"
          android:title="@string/action_settings"
-         app:showAsAction="never"/>-->
+         app:showAsAction="never"/>
 </menu>

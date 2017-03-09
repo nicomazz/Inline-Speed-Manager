@@ -2,6 +2,7 @@ package com.nicomazz.inline_speed_manager;
 
 import android.app.Activity;
 import android.content.Context;
+import android.preference.PreferenceManager;
 
 import com.nicomazz.inline_speed_manager.Bluetooth.BTReceiverManager;
 import com.nicomazz.inline_speed_manager.models.Run;
@@ -78,13 +79,13 @@ public class RunDetector implements BTReceiverManager.OnTimeReceived {
     //todo add setting for these
     private long getBestPossibleTime() {
         if ( bestTime < 0)
-            bestTime = SpeedManagerApplication.getContext().getSharedPreferences("pref", Context.MODE_PRIVATE).getInt("bestTime",0);
+            bestTime = PreferenceManager.getDefaultSharedPreferences(SpeedManagerApplication.getContext()).getInt("lowTime",0);
         return bestTime;
     }
 
     private long getWorseTime() {
         if ( worseTime < 0)
-            worseTime = SpeedManagerApplication.getContext().getSharedPreferences("pref", Context.MODE_PRIVATE).getInt("worseTime",0);
+            worseTime = PreferenceManager.getDefaultSharedPreferences(SpeedManagerApplication.getContext()).getInt("highTime",0);
         return worseTime;
     }
 
