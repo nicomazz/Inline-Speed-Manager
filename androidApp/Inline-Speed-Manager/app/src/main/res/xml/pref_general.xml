@@ -1,0 +1,26 @@
+<PreferenceScreen xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:ignore="NewApi">
+
+
+
+    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
+    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+    <EditTextPreference
+        android:defaultValue="3"
+        android:inputType="number"
+        android:key="lowTime"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Tempo minimo" />
+    <EditTextPreference
+        android:defaultValue="8"
+        android:inputType="number"
+        android:key="highTime"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Tempo massimo" />
+
+</PreferenceScreen>
