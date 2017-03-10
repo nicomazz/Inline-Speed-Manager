@@ -22,15 +22,15 @@ import java.util.TimerTask;
 public class ManualStartFragment extends BaseRunListFragment {
 
     private static final String TAG = "ManualStartFrag";
-    private RunDetector runDetector;
+    protected RunDetector runDetector;
 
-    private boolean runStartIntercept = false;
-    private boolean runInProgress = false;
+    protected boolean runStartIntercept = false;
+    protected boolean runInProgress = false;
     private Timer validRunTimer;
 
-    private long startTime;
+    protected long startTime;
 
-    private long delayInTransmission = 0;
+    protected long delayInTransmission = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -49,6 +49,7 @@ public class ManualStartFragment extends BaseRunListFragment {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (startButton.getProgress() > 0 && startButton.getProgress() != 100) {
                     Log.e(TAG, "run in progress, set bad!");
                     setBadProgess();
@@ -65,7 +66,7 @@ public class ManualStartFragment extends BaseRunListFragment {
     }
 
 
-    protected void startRun() {
+    private void startRun() {
         initValidTimer();
         runStartIntercept = true;
         runInProgress = true;
@@ -87,17 +88,18 @@ public class ManualStartFragment extends BaseRunListFragment {
             return;
         }
         run.durationMillis += delayInTransmission;
+        run.trasmissionDelay = (int) delayInTransmission;
         onRunTimeReceived();
         super.onRunDetected(run);
     }
 
-    private void startButtonLoading() {
+    protected void startButtonLoading() {
         runStartIntercept = false;
         startButton.setIndeterminateProgressMode(true);
         startButton.setProgress(50);
     }
 
-    private void onRunTimeReceived() {
+    protected void onRunTimeReceived() {
         Log.e(TAG, "run time received!");
         runInProgress = false;
         if (validRunTimer != null) validRunTimer.cancel();
@@ -110,7 +112,7 @@ public class ManualStartFragment extends BaseRunListFragment {
         }, 2000);
     }
 
-    private void initValidTimer() {
+    protected void initValidTimer() {
         if (validRunTimer != null) validRunTimer.cancel();
         validRunTimer = new Timer();
         validRunTimer.schedule(new TimerTask() {

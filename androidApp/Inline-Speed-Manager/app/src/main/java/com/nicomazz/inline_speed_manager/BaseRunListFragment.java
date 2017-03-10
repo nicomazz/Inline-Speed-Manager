@@ -83,7 +83,6 @@ public class BaseRunListFragment extends Fragment implements BTReceiverManager.B
 
         initFabs();
         setHasOptionsMenu(true);
-        TTSHelper.init();
         return rootView;
     }
 

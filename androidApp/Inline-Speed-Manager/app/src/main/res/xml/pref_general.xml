@@ -7,23 +7,32 @@
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
     <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
     <EditTextPreference
-        android:defaultValue="3"
+        android:defaultValue="3000"
         android:inputType="number"
         android:key="lowTime"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="Tempo minimo"
+        android:title="Tempo minimo run (ms)"
         android:summary="Una volta partito il cronometro non si fermerà prima dei secondi impostati."/>
     <EditTextPreference
-        android:defaultValue="8"
+        android:defaultValue="10000"
         android:inputType="number"
         android:key="highTime"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="Tempo massimo"
+        android:title="Tempo massimo run (ms)"
         android:summary="Le run con tempo superiore a quello impostato verranno considerate nulle." />
+    <EditTextPreference
+        android:defaultValue="500"
+        android:inputType="number"
+        android:key="before_start"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Massimo tempo prima del segnale di start (ms)"
+        android:summary="Dopo il pronti verrà scelto un valore di millisecondi casuale minore di quello qui impostato" />
     <EditTextPreference
         android:defaultValue="Ai posti"
         android:inputType="text"
@@ -36,7 +45,7 @@
     <EditTextPreference
         android:defaultValue="pronti?"
         android:inputType="text"
-        android:key="partenza"
+        android:key="pronti"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"

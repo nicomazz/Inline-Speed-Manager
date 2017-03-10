@@ -1,13 +1,12 @@
 package com.nicomazz.inline_speed_manager;
 
 import android.app.Activity;
-import android.content.Context;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.nicomazz.inline_speed_manager.Bluetooth.BTReceiverManager;
 import com.nicomazz.inline_speed_manager.models.Run;
 
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 
 /**
@@ -16,6 +15,7 @@ import java.util.ArrayList;
 
 public class RunDetector implements BTReceiverManager.OnTimeReceived {
 
+    private static final String TAG = "RunDetector";
     static private ArrayList<Long> runTimes = new ArrayList<>();
 
     private OnRunDetected listener;
@@ -26,6 +26,8 @@ public class RunDetector implements BTReceiverManager.OnTimeReceived {
     public static int worseTime = -1;
     public static int bestTime = -1;
 
+    private boolean dontSendNextRun;
+
     //activity must implements  BTStatusInterface
     public RunDetector(OnRunDetected listener, BTReceiverManager.BTStatusInterface btListener, Activity activity) {
         this.listener = listener;
@@ -34,15 +36,22 @@ public class RunDetector implements BTReceiverManager.OnTimeReceived {
 
     @Override
     public void onTimeReceived(long time) {
+        boolean isRunToBeSent = !dontSendNextRun;
+
+        dontSendNextRun = false;
         long runTime = time - lastTime;
-        if ( runTime < getBestPossibleTime())
-            return; // come se non ci fosse stato
         logTime(runTime);
+        listener.onNewTimeReceived();
+
+
+        if (runTime < getBestPossibleTime())
+            return; // come se non ci fosse stato
 
         lastTime = time;
         if (!isPossibleTime(runTime)) return;
-        listener.onNewTimeReceived();
-        addRun(new Run(runTime));
+
+        if (isRunToBeSent)
+            addRun(new Run(runTime));
 
     }
 
@@ -76,25 +85,41 @@ public class RunDetector implements BTReceiverManager.OnTimeReceived {
         return getBestPossibleTime() < runTime && runTime < getWorseTime();
     }
 
-    //todo add setting for these
     private long getBestPossibleTime() {
-        if ( bestTime < 0)
-            bestTime = PreferenceManager.getDefaultSharedPreferences(SpeedManagerApplication.getContext()).getInt("lowTime",0);
-        return bestTime;
+        try {
+            if (bestTime < 0)
+                bestTime = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(SpeedManagerApplication.getContext()).getString("lowTime", "0"));
+            return bestTime;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1000;
+        }
     }
 
     private long getWorseTime() {
-        if ( worseTime < 0)
-            worseTime = PreferenceManager.getDefaultSharedPreferences(SpeedManagerApplication.getContext()).getInt("highTime",0);
-        return worseTime;
+        try {
+            if (worseTime < 0)
+                worseTime = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(SpeedManagerApplication.getContext()).getString("highTime", "0"));
+            return worseTime;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 10 * 1000;
+        }
     }
 
     public void startRun() {
+        Log.d(TAG, "start run message sent");
         btManager.write("!");
+    }
+
+    public void requestTime() {
+        dontSendNextRun = true;
+        startRun();
     }
 
     public interface OnRunDetected {
         void onRunDetected(Run run);
+
         void onNewTimeReceived();
     }
 

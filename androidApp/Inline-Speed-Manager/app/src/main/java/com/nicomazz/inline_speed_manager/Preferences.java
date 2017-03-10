@@ -42,9 +42,9 @@ public class Preferences extends AppCompatActivity {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             if (key.contains("low"))
-                RunDetector.bestTime = sharedPreferences.getInt(key, -1);
+                RunDetector.bestTime = Integer.parseInt(sharedPreferences.getString(key, "-1"));
             else if (key.contains("high"))
-                RunDetector.worseTime = sharedPreferences.getInt(key, -1);
+                RunDetector.worseTime = Integer.parseInt(sharedPreferences.getString(key, "-1"));
         }
 
 

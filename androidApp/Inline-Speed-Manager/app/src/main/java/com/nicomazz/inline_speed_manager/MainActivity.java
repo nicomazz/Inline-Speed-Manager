@@ -29,8 +29,9 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setManualStartFragment();
+        TTSHelper.init();
 
+        setManualStartFragment();
         setupBoomMenu();
     }
 

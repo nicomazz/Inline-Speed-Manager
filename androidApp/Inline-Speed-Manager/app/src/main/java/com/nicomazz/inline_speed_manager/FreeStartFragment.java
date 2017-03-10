@@ -68,7 +68,8 @@ public class FreeStartFragment extends BaseRunListFragment {
     }
 
     public void updateLog() {
-        logText.setText(runDetector.getLog());
+        if (isLogVisible())
+            logText.setText(runDetector.getLog());
     }
 
 
@@ -78,11 +79,4 @@ public class FreeStartFragment extends BaseRunListFragment {
         return logView.getVisibility() == View.VISIBLE;
     }
 
-    private void changeAllTimesVisibility() {
-        //logView.setVisibility(logText.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
-        if (isLogVisible())
-            logView.setVisibility(View.GONE);
-        else logView.setVisibility(View.VISIBLE);
-        updateLog();
-    }
 }
