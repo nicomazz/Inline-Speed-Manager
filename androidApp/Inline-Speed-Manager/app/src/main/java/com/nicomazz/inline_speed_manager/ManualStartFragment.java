@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -41,9 +40,10 @@ public class ManualStartFragment extends BaseRunListFragment {
         return rootView;
     }
 
-    protected void setStartTime(long time){
+    protected void setStartTime(long time) {
         startTime = time;
     }
+
     protected void initStartButton() {
         startButton.setVisibility(View.VISIBLE);
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -77,9 +77,7 @@ public class ManualStartFragment extends BaseRunListFragment {
     @Override
     public void onRunDetected(Run run) {
         if (runStartIntercept) {
-            delayInTransmission = ((System.currentTimeMillis() - startTime) / 2);
             Toast.makeText(getContext(), "Delay: " + delayInTransmission + " ms", Toast.LENGTH_SHORT).show();
-            run.trasmissionDelay = (int) delayInTransmission;
         }
         updateLog();
         if (!runInProgress) return;
@@ -155,7 +153,9 @@ public class ManualStartFragment extends BaseRunListFragment {
 
 
     @Override
-    public void onNewTimeReceived() {
+    public void onNewTimeReceivedAt(Long receiveTime) {
+        if (runStartIntercept)
+            delayInTransmission = ((receiveTime - startTime) / 2);
         if (logView.getVisibility() == View.VISIBLE)
             updateLog();
     }

@@ -169,8 +169,8 @@ public class BaseRunListFragment extends Fragment implements BTReceiverManager.B
     }
 
     @Override
-    public void onNewTimeReceived() {
-        updateLog();
+    public void onNewTimeReceivedAt(Long receiveTime){
+    updateLog();
     }
 
     public void updateLog() {

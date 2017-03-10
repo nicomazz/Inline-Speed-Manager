@@ -35,14 +35,15 @@ public class RunDetector implements BTReceiverManager.OnTimeReceived {
     }
 
     @Override
-    public void onTimeReceived(long time) {
+    public void onTimeReceived(long time, long receivingTime){
         boolean isRunToBeSent = !dontSendNextRun;
-
         dontSendNextRun = false;
+
+
         long runTime = time - lastTime;
         logTime(runTime);
-        listener.onNewTimeReceived();
 
+        listener.onNewTimeReceivedAt(receivingTime);
 
         if (runTime < getBestPossibleTime())
             return; // come se non ci fosse stato
@@ -120,7 +121,8 @@ public class RunDetector implements BTReceiverManager.OnTimeReceived {
     public interface OnRunDetected {
         void onRunDetected(Run run);
 
-        void onNewTimeReceived();
+        //receive time is System.currentTimeMillis() when the message is received
+        void onNewTimeReceivedAt(Long receiveTime);
     }
 
     public void onPause() {

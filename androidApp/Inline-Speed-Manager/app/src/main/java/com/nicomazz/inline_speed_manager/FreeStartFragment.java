@@ -63,7 +63,7 @@ public class FreeStartFragment extends BaseRunListFragment {
     }
 
     @Override
-    public void onNewTimeReceived() {
+    public void onNewTimeReceivedAt(Long receiveTime){
         updateLog();
     }
 

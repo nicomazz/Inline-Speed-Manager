@@ -152,35 +152,22 @@ public class BTReceiverManager {
         }
     }
 
-    private long timeToHandleMessage = 0;
+    private long timeWhenMessageReceived = 0;
+
     private void handleMessageReceived(String received) {
-        final String[] ss = received.split("/");
-        final ArrayList<Long> millisToSend = parseMillis(ss);
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                for (Long millis : millisToSend) {
-                    Log.e(TAG,"time to handle message: "+(System.currentTimeMillis()-timeToHandleMessage));
-                    timeReceivedListener.onTimeReceived(millis);
+        try {
+            final Long millisToSend = Long.parseLong(received);
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Log.e(TAG, "time to handle message: " + (System.currentTimeMillis() - timeWhenMessageReceived));
+                    timeReceivedListener.onTimeReceived(millisToSend, timeWhenMessageReceived);
                 }
-
-            }
-        });
+            });
+        } catch (Exception e) {
+            log("ReceivedStrangeThings: " + received);
+        }
     }
-
-    private ArrayList<Long> parseMillis(String[] millisStr) {
-        ArrayList<Long> millisToSend = new ArrayList<>();
-        for (String s : millisStr)
-            try {
-                Long millis = Long.parseLong(s);
-                millisToSend.add(millis);
-            } catch (Exception e) {
-                log("ReceivedStrangeThings: " + s);
-            }
-
-        return millisToSend;
-    }
-
     //create new class for connect thread
     private class ReceiverThread extends Thread {
         private InputStream mmInStream;
@@ -203,9 +190,9 @@ public class BTReceiverManager {
 
                 try {
                     String s = in.next();
-                    timeToHandleMessage = System.currentTimeMillis();
+                    timeWhenMessageReceived = System.currentTimeMillis();
                     handleMessageReceived(s);
-                   // Log.d(TAG, "Message received: " + s);
+                    // Log.d(TAG, "Message received: " + s);
                 } catch (NoSuchElementException e) {
                     break;
                 }
@@ -229,7 +216,8 @@ public class BTReceiverManager {
     }
 
     public interface OnTimeReceived {
-        void onTimeReceived(long time);
+        //il secondo parametro sono i millis ai quali si è ricevuto il tempo
+        void onTimeReceived(long time, long receivingTime);
     }
 
     public interface BTStatusInterface {

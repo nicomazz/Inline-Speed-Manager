@@ -105,28 +105,27 @@ public class AutomaticStartFragment extends ManualStartFragment {
         initValidTimer();
         runStartIntercept = true;
         runInProgress = true;
-        setStartTime(System.currentTimeMillis());
         try {
             runDetector.requestTime();
             playStartSound();
+            setStartTime(System.currentTimeMillis());
         } catch (BTReceiverManager.NotConnectedException e) {
             setBadProgess();
         }
     }
 
     @Override
-    public void onNewTimeReceived() {
-        super.onNewTimeReceived();
+    public void onNewTimeReceivedAt(Long receiveTime){
+        super.onNewTimeReceivedAt(receiveTime);
+
         if (voiceInProgress.get() && !runInProgress) {
             Log.d(TAG, "falsa");
             TTSHelper.speakText("FALSA");
             return;
         }
         if (runStartIntercept) {
-            delayInTransmission = ((System.currentTimeMillis() - startTime) / 2);
             runStartIntercept = false;
             startButtonLoading();
-         //   playStartSound();
         }
     }
 
