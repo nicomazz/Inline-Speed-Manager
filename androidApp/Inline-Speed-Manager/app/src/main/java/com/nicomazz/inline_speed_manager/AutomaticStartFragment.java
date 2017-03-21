@@ -53,6 +53,10 @@ public class AutomaticStartFragment extends ManualStartFragment {
             }
         });
     }
+    private int getDelay(String key, String def){
+        return Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getContext()).getString(key, def));
+
+    }
 
     void startVoice() {
 
@@ -60,45 +64,86 @@ public class AutomaticStartFragment extends ManualStartFragment {
             @Override
             public void run() {
                 try {
-                    Looper.prepare();
                     voiceInProgress.set(true);
+
+                    int initialDelay = getDelay("initial_delay", "0");
+                    Thread.sleep(initialDelay);
+
                     Log.d("autoStart", "ai posti");
                     /**
                      * AI POSTI
                      */
-                    TTSHelper.speakText(PreferenceManager.getDefaultSharedPreferences(getContext()).getString("ai_posti", "ai posti"));
-                    Thread.sleep(1500);
-
-                    /**
-                     * PRONTI
-                     */
-                    Log.d("autoStart", "pronti");
-                    TTSHelper.speakText(PreferenceManager.getDefaultSharedPreferences(getContext()).getString("pronti", "pronti"));
-                    int max_millis = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getContext()).getString("before_start", "5000"));
-                    final int val = new Random(System.currentTimeMillis()).nextInt(Math.max(1000, max_millis - 1000)) + 1000;
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getContext(), "prima di partire: " + val + " ms", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    Thread.sleep(val);
-
-                    /**
-                     * VIA
-                     */
-                    Log.d("autoStart", "via");
-
-                    startRun();
-
+                    aiPosti();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
-                    voiceInProgress.set(false);
+
                 }
             }
         });
         voiceThread.start();
+    }
+
+    private void aiPosti() {
+        /**
+         * AI POSTI
+         */
+        String aiPosti = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("ai_posti", "ai posti");
+        TTSHelper.speakText(aiPosti, new TTSHelper.OnSpeakFinishedListener() {
+            @Override
+            public void onSpeakFinished() {
+                try {
+                    Thread.sleep(getDelay("ai_posti_pronti","3000"));
+                    pronti();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    voiceInProgress.set(false);
+                }
+
+            }
+        });
+    }
+
+    private void pronti() {
+        /**
+         * PRONTI
+         */
+        Log.d("autoStart", "pronti");
+        String pronti = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("pronti", "pronti");
+        TTSHelper.speakText(pronti, new TTSHelper.OnSpeakFinishedListener() {
+            @Override
+            public void onSpeakFinished() {
+                Looper.prepare();
+                delayVia();
+            }
+        });
+
+    }
+
+    private void delayVia() {
+        try {
+            int delayConst = getDelay("min_delay_via","1000");
+            int max_variable_delay = getDelay("max_random_offset","2000");
+            int random_delay = new Random(System.currentTimeMillis()).nextInt(max_variable_delay);
+            final int final_delay = delayConst + random_delay;
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getContext(), "prima di partire: " + final_delay + " ms", Toast.LENGTH_SHORT).show();
+                }
+            });
+            Thread.sleep(final_delay);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            voiceInProgress.set(false);
+            return;
+        }
+        /**
+         * VIA
+         */
+        Log.d("autoStart", "via");
+
+        startRun();
     }
 
     private void startRun() {
@@ -115,7 +160,7 @@ public class AutomaticStartFragment extends ManualStartFragment {
     }
 
     @Override
-    public void onNewTimeReceivedAt(Long receiveTime){
+    public void onNewTimeReceivedAt(Long receiveTime) {
         super.onNewTimeReceivedAt(receiveTime);
 
         if (voiceInProgress.get() && !runInProgress) {
@@ -130,7 +175,13 @@ public class AutomaticStartFragment extends ManualStartFragment {
     }
 
     private void playStartSound() {
-        soundPool.play(soundID, 1.0f, 1.0f, 1, 0, 1f);
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                soundPool.play(soundID, 1.0f, 1.0f, 1, 0, 1f);
+
+            }
+        });
 
         /*  final MediaPlayer mp = MediaPlayer.create(AutomaticStartFragment.this.getContext(), R.raw.beep);
         mp.start();*/

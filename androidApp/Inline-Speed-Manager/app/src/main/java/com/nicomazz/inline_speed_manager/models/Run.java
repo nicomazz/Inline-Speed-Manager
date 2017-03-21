@@ -25,6 +25,6 @@ public class Run extends RealmObject {
 
     @Override
     public String toString() {
-        return durationMillis / 1000 + " secondi e " + (durationMillis % 1000) / 10 + " decimi";
+        return durationMillis / 1000 + " secondi e " + (durationMillis % 1000)  + " millesimi";
     }
 }
