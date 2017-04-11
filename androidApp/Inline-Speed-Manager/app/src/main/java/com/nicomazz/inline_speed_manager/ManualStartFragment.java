@@ -35,7 +35,8 @@ public class ManualStartFragment extends BaseRunListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
-        runDetector = new RunDetector(this, this, getActivity());
+        if (runDetector == null)
+            runDetector = new RunDetector(this, this, getActivity());
         initStartButton();
         return rootView;
     }

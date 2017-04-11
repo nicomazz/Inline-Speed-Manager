@@ -29,6 +29,7 @@ public class AutomaticStartFragment extends ManualStartFragment {
     private Thread voiceThread;
     private SoundPool soundPool;
     private int soundID;
+    private boolean interrotto = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -44,16 +45,22 @@ public class AutomaticStartFragment extends ManualStartFragment {
             @Override
             public void onClick(View v) {
                 if (voiceInProgress.get() || (startButton.getProgress() > 0 && startButton.getProgress() != 100)) {
-                    voiceThread.interrupt();
-                    voiceInProgress.set(false);
-                    setBadProgess();
-                    return;
+                   stopRun();
+                   return;
                 }
                 startVoice();
             }
         });
     }
-    private int getDelay(String key, String def){
+
+    private void stopRun(){
+        voiceThread.interrupt();
+        voiceInProgress.set(false);
+        setBadProgess();
+        interrotto = true;
+        Toast.makeText(getContext(), "interrompo precedente!", Toast.LENGTH_SHORT).show();
+    }
+    private int getDelay(String key, String def) {
         return Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getContext()).getString(key, def));
 
     }
@@ -68,14 +75,18 @@ public class AutomaticStartFragment extends ManualStartFragment {
 
                     int initialDelay = getDelay("initial_delay", "0");
                     Thread.sleep(initialDelay);
-
+                    checkInterrupted();
                     Log.d("autoStart", "ai posti");
                     /**
                      * AI POSTI
                      */
                     aiPosti();
                 } catch (InterruptedException e) {
+                    Looper.prepare();
+                    Toast.makeText(getContext(), "start interrotto!", Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
+                    voiceInProgress.set(false);
+                    interrotto = false;
                 } finally {
 
                 }
@@ -84,6 +95,9 @@ public class AutomaticStartFragment extends ManualStartFragment {
         voiceThread.start();
     }
 
+    private void checkInterrupted() throws InterruptedException {
+       if (interrotto) throw  new InterruptedException();
+    }
     private void aiPosti() {
         /**
          * AI POSTI
@@ -93,11 +107,13 @@ public class AutomaticStartFragment extends ManualStartFragment {
             @Override
             public void onSpeakFinished() {
                 try {
-                    Thread.sleep(getDelay("ai_posti_pronti","3000"));
+                    Thread.sleep(getDelay("ai_posti_pronti", "3000"));
+                    checkInterrupted();
                     pronti();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                     voiceInProgress.set(false);
+                    interrotto = false;
                 }
 
             }
@@ -113,7 +129,7 @@ public class AutomaticStartFragment extends ManualStartFragment {
         TTSHelper.speakText(pronti, new TTSHelper.OnSpeakFinishedListener() {
             @Override
             public void onSpeakFinished() {
-                Looper.prepare();
+               // Looper.prepare();
                 delayVia();
             }
         });
@@ -122,10 +138,7 @@ public class AutomaticStartFragment extends ManualStartFragment {
 
     private void delayVia() {
         try {
-            int delayConst = getDelay("min_delay_via","1000");
-            int max_variable_delay = getDelay("max_random_offset","2000");
-            int random_delay = new Random(System.currentTimeMillis()).nextInt(max_variable_delay);
-            final int final_delay = delayConst + random_delay;
+            final int final_delay = getRandomOffset();
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
@@ -133,9 +146,13 @@ public class AutomaticStartFragment extends ManualStartFragment {
                 }
             });
             Thread.sleep(final_delay);
+            checkInterrupted();
         } catch (InterruptedException e) {
+            Looper.prepare();
+            Toast.makeText(getContext(), "INTERROTTO!", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
             voiceInProgress.set(false);
+            interrotto = false;
             return;
         }
         /**
@@ -144,6 +161,14 @@ public class AutomaticStartFragment extends ManualStartFragment {
         Log.d("autoStart", "via");
 
         startRun();
+    }
+
+    private int getRandomOffset() {
+        int delayConst = getDelay("min_delay_via", "1000");
+        int max_variable_delay = getDelay("max_random_offset", "2000");
+        int random_delay = new Random(System.currentTimeMillis()).nextInt(max_variable_delay);
+        final int final_delay = delayConst + random_delay;
+        return final_delay;
     }
 
     private void startRun() {
@@ -157,6 +182,7 @@ public class AutomaticStartFragment extends ManualStartFragment {
         } catch (BTReceiverManager.NotConnectedException e) {
             setBadProgess();
         }
+        voiceInProgress.set(false);
     }
 
     @Override
@@ -166,6 +192,7 @@ public class AutomaticStartFragment extends ManualStartFragment {
         if (voiceInProgress.get() && !runInProgress) {
             Log.d(TAG, "falsa");
             TTSHelper.speakText("FALSA");
+            stopRun();
             return;
         }
         if (runStartIntercept) {
